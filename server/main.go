@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"net/url"
@@ -26,14 +27,17 @@ func main() {
 			err := r.ParseForm()
 			if err != nil {
 				w.WriteHeader(500)
+				fmt.Println(err)
 				return
 			}
 
 			token := r.Form.Get("g-recaptcha-response")
 			if token == "" {
+				msg := "g-recaptcha-response is missing."
 				w.WriteHeader(400)
-				b, _ := json.Marshal(map[string]string{"message": "g-recaptcha-response is missing."})
+				b, _ := json.Marshal(map[string]string{"message": msg})
 				w.Write(b)
+				fmt.Println(msg)
 				return
 			}
 
@@ -41,6 +45,7 @@ func main() {
 			resp, err := http.PostForm("https://www.google.com/recaptcha/api/siteverify", v)
 			if err != nil {
 				w.WriteHeader(400)
+				fmt.Println(err)
 				return
 			}
 			defer resp.Body.Close()
@@ -49,16 +54,19 @@ func main() {
 			err = json.NewDecoder(resp.Body).Decode(&rr)
 			if err != nil {
 				w.WriteHeader(500)
+				fmt.Println(err)
 				return
 			}
 
 			b, err := json.Marshal(rr)
 			if err != nil {
 				w.WriteHeader(500)
+				fmt.Println(err)
 				return
 			}
 
 			w.Write(b)
+			fmt.Printf("Success? %t\n", rr.Success)
 		default:
 			w.WriteHeader(404)
 		}
