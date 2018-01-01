@@ -3,6 +3,8 @@
     "start": "node index.js"
   },
   "dependencies": {
-    "puppeteer": "^0.13.0"
+    "dotenv": "^4.0.0",
+    "puppeteer": "^0.13.0",
+    "watson-developer-cloud": "^3.0.3"
   }
 }
